@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DeluxeParking1
 {
-    internal class RegistrationGenerator
+    internal class LicensePlateGenerator
     {
         private static Random random = new Random();
 

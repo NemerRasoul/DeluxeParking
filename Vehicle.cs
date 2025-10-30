@@ -16,7 +16,7 @@ namespace DeluxeParking1
 
         protected Vehicle(string color)
         {
-            RegistrationNumber = RegistrationGenerator.GenerateRegistrationNumber();
+            RegistrationNumber = LicensePlateGenerator.GenerateRegistrationNumber();
             Color = color;
             ParkedAt = DateTime.Now;
         }
