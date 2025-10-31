@@ -12,17 +12,19 @@ namespace DeluxeParking1
 
         internal static string GenerateRegistrationNumber() 
         {
-            char letter1 = (char)random.Next('A', 'Ö' + 1);
-            char letter2 = (char)random.Next('A', 'Ö' + 1);
-            char letter3 = (char)random.Next('A', 'Ö' + 1);
+            char[] letters = new char[3];
+            for (int i = 0; i < 3; i++) 
+            {
+                letters[i] = (char)random.Next('A', 'Z' + 1);
+            }
 
-            int number1 = random.Next(0, 10);
-            int number2 = random.Next(0, 10);
-            int number3 = random.Next(0, 10);
+            char[] numbers = new char[3];
+            for (int i = 0; i < 3; i++)
+            {
+                numbers[i] = (char)('0' + random.Next(0, 10));
+            }
 
-            string RegistrationNumber = $"{letter1}{letter2}{letter3}-{number1}{number2}{number3}";
-
-            return RegistrationNumber;
+            return $"{new string(letters)}-{new string(numbers)}";
         }
     }
 }
