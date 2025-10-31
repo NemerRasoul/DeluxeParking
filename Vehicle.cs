@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DeluxeParking1
 {
-    abstract class Vehicle
+   internal abstract class Vehicle
     {
        internal string RegistrationNumber { get; set; }
        internal string Color { get; set; }

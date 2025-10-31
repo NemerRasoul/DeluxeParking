@@ -19,6 +19,5 @@ namespace DeluxeParking1
         {
             return $"Motorcykel, {Brand}, {Color}, {RegistrationNumber}";
         }
-
     }
 }

@@ -8,17 +8,17 @@ namespace DeluxeParking1
 {
     internal class Car : Vehicle
     {
-       internal bool IsElectirc { get; set; }
+       internal bool IsElectric { get; set; }
        internal override double RequiredSpaces => 1;
 
         public Car(string color, bool isElectric) : base (color)
         {
-            IsElectirc = isElectric;
+            IsElectric = isElectric;
         }
         
         internal override string GetVehicleInfo() 
         {
-            string CarType = IsElectirc ? "Elbil" : "Bensinbil";
+            string CarType = IsElectric ? "Elbil" : "Bensinbil";
             return $"{CarType}, {Color}, {RegistrationNumber}";
         }
     }
