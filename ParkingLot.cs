@@ -21,20 +21,20 @@ namespace DeluxeParking1
             }
         }
 
-        internal bool AddVehicleToSpot(Vehicle vehicle) 
+        internal bool AddVehicleToSpot(Vehicle vehicle)
         {
             if (vehicle == null) return false;
 
-            switch (vehicle) 
+            switch (vehicle)
             {
                 case Bus bus:
-                    for (int i = 0; i < ParkingSpots.Count; i++) 
+                    for (int i = 0; i < ParkingSpots.Count; i++)
                     {
                         var firstSpot = ParkingSpots[i];
                         var secondSpot = ParkingSpots[i + 1];
 
                         // Buss behöver två tomma platser i rad
-                        if (firstSpot.SpaceUsed == 0 && secondSpot.SpaceUsed == 0) 
+                        if (firstSpot.SpaceUsed == 0 && secondSpot.SpaceUsed == 0)
                         {
                             // Läggs direkt i listan för att undvika ParkVehicle metoden
                             firstSpot.Vehicles.Add(bus);
@@ -47,10 +47,10 @@ namespace DeluxeParking1
                     Console.WriteLine("Ingen plats för buss");
                     return false;
 
-                    case Car car:
-                    foreach (var spot in ParkingSpots) 
+                case Car car:
+                    foreach (var spot in ParkingSpots)
                     {
-                        if (spot.HasSpaceFor(car)) 
+                        if (spot.SpaceUsed == 0 && spot.HasSpaceFor(car))
                         {
                             spot.ParkVehicle(car);
                             return true;
@@ -58,19 +58,89 @@ namespace DeluxeParking1
                     }
                     return false;
 
-                    case Motorcycle motorcycle:
-                    foreach (var spot in ParkingSpots) 
+                case Motorcycle motorcycle:
+                    foreach (var spot in ParkingSpots)
                     {
-                        if (spot.HasSpaceFor(motorcycle)) 
+                        // Försök dela en plats med en annan motorcykel
+                        if (spot.SpaceUsed >= 0.01 && spot.SpaceUsed <= 0.5 && spot.HasSpaceFor(motorcycle))
                         {
                             spot.ParkVehicle(motorcycle);
                             return true;
                         }
                     }
+
+                    // Om ingen delad plats hittades, leta efter en tom plats
+                    foreach (var spot in ParkingSpots)
+                    {
+                        if (spot.SpaceUsed == 0 && spot.HasSpaceFor(motorcycle))
+                        {
+                            spot.ParkVehicle(motorcycle);
+                            return true;
+                        }
+                    }
+                    Console.WriteLine("Ingen plats tillgänglig för Motorcykel");
                     return false;
 
-                    default:
+                default:
                     return false;
+            }
+        }
+
+        internal bool RemoveVehicle(string regNumber)
+        {
+            Vehicle foundVehicle = null;
+
+            foreach (var spot in ParkingSpots)
+            {
+                foundVehicle = spot.Vehicles.Find(vehicle => vehicle.RegistrationNumber == regNumber);
+
+                if (foundVehicle != null)
+                    break;
+            }
+
+            if (foundVehicle == null)
+            {
+                Console.WriteLine($"Fordon med registreringsnummer {regNumber} hittades inte");
+                return false;
+            }
+
+            TimeSpan timeParked = DateTime.Now - foundVehicle.ParkedAt;
+            double price = timeParked.TotalMinutes * PricePerMinute;
+
+            // Ta bort fordonet från alla platser den kan vara på
+            foreach (var spot in ParkingSpots)
+            {
+                if (spot.ContainsVehicle(regNumber))
+                {
+                    spot.RemoveVehicle(regNumber);
+                }
+            }
+
+            Console.WriteLine($"\nFordon med registreringsnummer {regNumber} har checkat ut");
+            Console.WriteLine($"Tid parkerad: {timeParked.TotalMinutes} minuter");
+            Console.WriteLine($"Pris: {price} kr");
+
+            return true;
+        }
+
+        internal void PrintStatus()
+        {
+            Console.WriteLine("\n Parkerings Status \n");
+
+            foreach (var spot in ParkingSpots)
+            {
+                if (spot.Vehicles.Count == 0)
+                {
+                    Console.WriteLine($"Plats {spot.SpotNumber}: Tom");
+                }
+                else
+                {
+                    foreach (var vehicle in spot.Vehicles.Distinct())
+                    {
+                        string vehicleInfo = GenericHelpers.DescribeVehicle(vehicle);
+                        Console.WriteLine($"Plats {spot.SpotNumber}: {vehicleInfo}");
+                    }
+                }
             }
         }
     }

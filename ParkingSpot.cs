@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DeluxeParking1
 {
-    internal class ParkingSpot 
+    internal class ParkingSpot
     {
         internal int SpotNumber { get; set; }
         internal List<Vehicle> Vehicles { get; set; }
@@ -16,10 +16,12 @@ namespace DeluxeParking1
             Vehicles = new List<Vehicle>();
         }
 
-        internal double SpaceUsed 
+        internal double SpaceUsed
         {
-            get { double total = 0;
-                foreach (var vehicle in Vehicles) 
+            get
+            {
+                double total = 0;
+                foreach (var vehicle in Vehicles)
                 {
                     total += vehicle.RequiredSpaces;
                 }
@@ -29,12 +31,12 @@ namespace DeluxeParking1
 
         // Kollar om det finns plats för fordonet
         // Denna metod fungerar inte för bussar eftersom Buss kräver två platser
-        internal bool HasSpaceFor(Vehicle vehicle) 
+        internal bool HasSpaceFor(Vehicle vehicle)
         {
             return (SpaceUsed + vehicle.RequiredSpaces) <= 1.0;
         }
 
-        internal bool IsFull 
+        internal bool IsFull
         {
             get { return SpaceUsed >= 1.0; }
         }
@@ -42,20 +44,20 @@ namespace DeluxeParking1
         // Parkerar fordonet på denna spot
         // Denna metod är för Car och Motorcycle, inte för Buss
         // Bussar kräver två platser och hanteras i ParkingLot.cs
-        internal void ParkVehicle (Vehicle vehicle) 
+        internal void ParkVehicle(Vehicle vehicle)
         {
-            if (HasSpaceFor(vehicle)) 
+            if (HasSpaceFor(vehicle))
             {
                 Vehicles.Add(vehicle);
                 Console.WriteLine($"Fordon {vehicle.RegistrationNumber} har parkerats på plats {SpotNumber}");
             }
-            else 
+            else
             {
                 Console.WriteLine($"Ingen plats på {SpotNumber}");
             }
         }
 
-        internal void RemoveVehicle(string RegNumber) 
+        internal void RemoveVehicle(string RegNumber)
         {
             Vehicle VehicleToRemove = Vehicles.Find(vehicle => vehicle.RegistrationNumber == RegNumber);
 
@@ -64,6 +66,18 @@ namespace DeluxeParking1
                 Vehicles.Remove(VehicleToRemove);
                 Console.WriteLine($"Fordon {RegNumber} har lämnat plats {SpotNumber}");
             }
+        }
+
+        internal bool ContainsVehicle(string RegNumber)
+        {
+            foreach (var vehicle in Vehicles)
+            {
+                if (vehicle.RegistrationNumber == RegNumber)
+                {
+                    return true;
+                }
+            }
+           return false;
         }
     }
 }

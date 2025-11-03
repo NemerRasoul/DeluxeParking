@@ -18,7 +18,7 @@ namespace DeluxeParking1
 
         internal override string GetVehicleInfo()
         {
-            return $"Buss, {Color}, {RegistrationNumber}, {PassengerCount} passagerare";
+            return $"Buss, {RegistrationNumber}, {Color}, {PassengerCount} passagerare";
         }
     }
 }

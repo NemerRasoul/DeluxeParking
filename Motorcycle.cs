@@ -17,7 +17,7 @@ namespace DeluxeParking1
 
         internal override string GetVehicleInfo()
         {
-            return $"Motorcykel, {Brand}, {Color}, {RegistrationNumber}";
+            return $"Motorcykel,  {RegistrationNumber}, {Color}, {Brand}";
         }
     }
 }

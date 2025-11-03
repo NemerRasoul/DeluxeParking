@@ -19,7 +19,7 @@ namespace DeluxeParking1
         internal override string GetVehicleInfo() 
         {
             string CarType = IsElectric ? "Elbil" : "Bensinbil";
-            return $"{CarType}, {Color}, {RegistrationNumber}";
+            return $"{CarType}, {RegistrationNumber}, {Color}";
         }
     }
 }
