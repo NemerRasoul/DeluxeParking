@@ -28,7 +28,7 @@ namespace DeluxeParking1
             switch (vehicle)
             {
                 case Bus bus:
-                    for (int i = 0; i < ParkingSpots.Count; i++)
+                    for (int i = 0; i < ParkingSpots.Count - 1; i++)
                     {
                         var firstSpot = ParkingSpots[i];
                         var secondSpot = ParkingSpots[i + 1];
@@ -40,11 +40,10 @@ namespace DeluxeParking1
                             firstSpot.Vehicles.Add(bus);
                             secondSpot.Vehicles.Add(bus);
 
-                            Console.WriteLine($"Buss {bus.RegistrationNumber} parkerad på platser {firstSpot.SpotNumber}-{secondSpot.SpotNumber}");
+                            Console.WriteLine($"Fordon: {bus.RegistrationNumber} parkerad på platser {firstSpot.SpotNumber}-{secondSpot.SpotNumber}");
                             return true;
                         }
                     }
-                    Console.WriteLine("Ingen plats för buss");
                     return false;
 
                 case Car car:
@@ -78,7 +77,6 @@ namespace DeluxeParking1
                             return true;
                         }
                     }
-                    Console.WriteLine("Ingen plats tillgänglig för Motorcykel");
                     return false;
 
                 default:
@@ -125,7 +123,7 @@ namespace DeluxeParking1
 
         internal void PrintStatus()
         {
-            Console.WriteLine("\n Parkerings Status \n");
+            Console.WriteLine("\nParkerings Status \n");
 
             foreach (var spot in ParkingSpots)
             {
