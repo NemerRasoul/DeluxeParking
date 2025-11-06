@@ -10,6 +10,8 @@ namespace DeluxeParking1
     {
         internal int PassengerCount { get; set; }
         internal override double RequiredSpaces => 2;
+        internal int FirstSpot { get; set; }
+        internal int SecondSpot { get; set; }
 
         public Bus(string color, int passengerCount) : base (color)
         {

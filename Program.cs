@@ -16,7 +16,8 @@ namespace DeluxeParking1
                 Console.WriteLine("1. Parkera fordon");
                 Console.WriteLine("2. Checka ut fordon");
                 Console.WriteLine("3. Visa parkeringsstatus");
-                Console.WriteLine("4. Avsluta\n");
+                Console.WriteLine("4. Sök fordon");
+                Console.WriteLine("5. Avsluta\n");
 
                 string input = Console.ReadLine();
 
@@ -34,7 +35,11 @@ namespace DeluxeParking1
                         parkingLot.PrintStatus();
                         break;
 
-                    case "4":
+                        case "4":
+                            SearchVehicle(parkingLot);
+                            break;
+
+                    case "5":
                         running = false;
                         break;
 
@@ -92,8 +97,6 @@ namespace DeluxeParking1
                     color = colors[random.Next(colors.Length)];
                 }
             }
-
-
             Vehicle vehicle = null;
 
            switch (vehicleType) 
@@ -142,7 +145,7 @@ namespace DeluxeParking1
                     else
                     {
                         string userBrand = (brandInput ?? "").ToLower();
-                        string matchedBrand = Array.Find(mcBrands, brands => brands.ToLower() == userBrand);
+                        string matchedBrand = Array.Find(mcBrands, brandOption => brandOption.ToLower() == userBrand);
 
                         if (matchedBrand != null)
                         {
@@ -197,6 +200,33 @@ namespace DeluxeParking1
             if (!parkingLot.RemoveVehicle(regNumber)) 
             {
                 Console.WriteLine("Fordonet kunde inte checkas ut");
+            }
+        }
+
+        static void SearchVehicle(ParkingLot parkingLot) 
+        {
+            Console.WriteLine("\n -- Sök Fordon --");
+            Console.WriteLine("Ange registreringsnummer att söka efter: ");
+
+            string regNumberToSearch = Console.ReadLine();
+
+            Vehicle foundVehicle = parkingLot.FindVehicle(regNumberToSearch);
+
+            if (foundVehicle != null)
+            {
+                string spotInfo = parkingLot.GetSpotInfo(foundVehicle);
+
+                string vehicleDetails = GenericHelpers.DescribeVehicle(foundVehicle);
+
+                TimeSpan timeParked = parkingLot.CalculateTimeParked(foundVehicle);
+                string timeInfo = $"(Parkerad i {timeParked.TotalMinutes:F2} minuter)";
+
+                Console.WriteLine("\n-- Sökresultat --");
+                Console.WriteLine($"{spotInfo}: {vehicleDetails}, {timeInfo}");
+            }
+            else
+            {
+                Console.WriteLine($"Fordon med registreringsnummer: {regNumberToSearch} hittades inte");
             }
         }
     }

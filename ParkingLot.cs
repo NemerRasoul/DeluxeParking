@@ -12,6 +12,42 @@ namespace DeluxeParking1
 
         internal double PricePerMinute { get; set; } = 1.5;
 
+        internal string GetSpotInfo(Vehicle vehicle) 
+        {
+           if (vehicle is Bus bus)
+           {
+                return $"Platser {bus.FirstSpot}-{bus.SecondSpot}";
+           }
+           else
+           {
+                foreach (var spot in ParkingSpots)
+                {
+                    if (spot.ContainsVehicle(vehicle.RegistrationNumber))
+                    {
+                        return $"Plats {spot.SpotNumber}";
+                    }
+                }
+           }
+           return "Okänd plats";
+        }
+
+        internal Vehicle FindVehicle(string regNumber)
+        {
+            foreach (var spot in ParkingSpots)
+            {
+                Vehicle foundVehicle = spot.Vehicles.Find(vehicle => vehicle.RegistrationNumber == regNumber);
+                if (foundVehicle != null)
+                {
+                    return foundVehicle;
+                }
+            }
+            return null;
+        }
+        internal TimeSpan CalculateTimeParked(Vehicle vehicle) 
+        {
+            return DateTime.Now - vehicle.ParkedAt;
+        }
+
         public ParkingLot(int numberOfSpots = 15)
         {
             ParkingSpots = new List<ParkingSpot>();
@@ -40,7 +76,11 @@ namespace DeluxeParking1
                             firstSpot.Vehicles.Add(bus);
                             secondSpot.Vehicles.Add(bus);
 
-                            Console.WriteLine($"Fordon: {bus.RegistrationNumber} parkerad på platser {firstSpot.SpotNumber}-{secondSpot.SpotNumber}");
+                            bus.FirstSpot = firstSpot.SpotNumber;
+                            bus.SecondSpot = secondSpot.SpotNumber;
+
+                            string spotInfo = GetSpotInfo(bus);
+                            Console.WriteLine($"Fordon: {bus.RegistrationNumber} parkerad på {spotInfo}");
                             return true;
                         }
                     }
@@ -86,15 +126,7 @@ namespace DeluxeParking1
 
         internal bool RemoveVehicle(string regNumber)
         {
-            Vehicle foundVehicle = null;
-
-            foreach (var spot in ParkingSpots)
-            {
-                foundVehicle = spot.Vehicles.Find(vehicle => vehicle.RegistrationNumber == regNumber);
-
-                if (foundVehicle != null)
-                    break;
-            }
+            Vehicle foundVehicle = FindVehicle(regNumber);
 
             if (foundVehicle == null)
             {
@@ -102,7 +134,7 @@ namespace DeluxeParking1
                 return false;
             }
 
-            TimeSpan timeParked = DateTime.Now - foundVehicle.ParkedAt;
+            TimeSpan timeParked = CalculateTimeParked(foundVehicle);
             double price = timeParked.TotalMinutes * PricePerMinute;
 
             // Ta bort fordonet från alla platser den kan vara på
@@ -115,15 +147,17 @@ namespace DeluxeParking1
             }
 
             Console.WriteLine($"\nFordon med registreringsnummer {regNumber} har checkat ut");
-            Console.WriteLine($"Tid parkerad: {timeParked.TotalMinutes} minuter");
-            Console.WriteLine($"Pris: {price} kr");
+            Console.WriteLine($"Tid parkerad: {timeParked.TotalMinutes:F2} minuter");
+            Console.WriteLine($"Pris: {price:F2} kr");
 
             return true;
         }
 
         internal void PrintStatus()
         {
-            Console.WriteLine("\nParkerings Status \n");
+            Console.WriteLine("\n-- Parkeringsstatus -- \n");
+
+            List<Vehicle> printed = new List<Vehicle>();
 
             foreach (var spot in ParkingSpots)
             {
@@ -133,10 +167,22 @@ namespace DeluxeParking1
                 }
                 else
                 {
-                    foreach (var vehicle in spot.Vehicles.Distinct())
+                    foreach (var vehicle in spot.Vehicles)
                     {
+                        // Undviker att skriva ut samma fordon flera gånger
+                        if (printed.Contains(vehicle))
+                        { 
+                            continue;
+                        }
+                        printed.Add(vehicle);
+
+                        TimeSpan timeParked = CalculateTimeParked(vehicle);
+                        string timeInfo = $"(Parkerad i {timeParked.TotalMinutes:F1} minuter)";
+
                         string vehicleInfo = GenericHelpers.DescribeVehicle(vehicle);
-                        Console.WriteLine($"Plats {spot.SpotNumber}: {vehicleInfo}");
+                        string spotInfo = GetSpotInfo(vehicle);
+
+                        Console.WriteLine($"{spotInfo}: {vehicleInfo}, {timeInfo}");
                     }
                 }
             }
